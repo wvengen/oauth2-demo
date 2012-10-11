@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app 
+   xmlns="http://java.sun.com/xml/ns/javaee" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" 
+   version="2.5">
+
+  <servlet>
+    <servlet-name>Hello</servlet-name>
+    <servlet-class>org.example.HelloServlet</servlet-class>
+  </servlet>
+
+  <!-- /hello is mapped to the Servlet -->
+  <servlet-mapping>
+    <servlet-name>Hello</servlet-name>
+    <url-pattern>/hello/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- password-protect /secure -->
+  <servlet-mapping>
+    <servlet-name>Hello</servlet-name>
+    <url-pattern>/secure/*</url-pattern>
+  </servlet-mapping>
+  <security-role>
+    <role-name>privileged</role-name>
+  </security-role>
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>secured</web-resource-name>
+      <url-pattern>/secure/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>privileged</role-name>
+    </auth-constraint>
+  </security-constraint>
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <real-name>Privileged access only</real-name>
+  </login-config>
+
+</web-app>
