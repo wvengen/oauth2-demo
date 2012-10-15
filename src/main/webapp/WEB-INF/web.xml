@@ -16,26 +16,26 @@
     <url-pattern>/hello/*</url-pattern>
   </servlet-mapping>
 
-  <!-- password-protect /secure -->
+  <!-- password-protect /secure using Spring Security -->
   <servlet-mapping>
     <servlet-name>Hello</servlet-name>
     <url-pattern>/secure/*</url-pattern>
   </servlet-mapping>
-  <security-role>
-    <role-name>privileged</role-name>
-  </security-role>
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>secured</web-resource-name>
-      <url-pattern>/secure/*</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>privileged</role-name>
-    </auth-constraint>
-  </security-constraint>
-  <login-config>
-    <auth-method>BASIC</auth-method>
-    <real-name>Privileged access only</real-name>
-  </login-config>
+  
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/security-app-context.xml</param-value>
+  </context-param>  
+  <filter>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <url-pattern>/secure/*</url-pattern>
+  </filter-mapping>  
 
 </web-app>
