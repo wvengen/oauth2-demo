@@ -3,7 +3,7 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" 
    version="2.5">
-
+   
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
@@ -20,8 +20,8 @@
 
   <servlet-mapping>
     <servlet-name>spring</servlet-name>
-    <url-pattern>/*</url-pattern>
-  </servlet-mapping>  
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
 
   <!-- protected access required on a different url -->
   <filter>
@@ -31,7 +31,7 @@
   
   <filter-mapping>
     <filter-name>springSecurityFilterChain</filter-name>
-    <url-pattern>/secure/*</url-pattern>
+    <url-pattern>/secure</url-pattern>
   </filter-mapping>
 
 </web-app>

@@ -15,8 +15,8 @@
   <context:component-scan base-package="org.example" />
   <!-- Enables the Spring MVC @Controller programming model -->
   <mvc:annotation-driven />
-  <!-- fallback to static content -->
-  <mvc:resources mapping="/**" location="/" />
+  <!-- And serve static content as well -->
+  <mvc:default-servlet-handler />
 
   <!-- password-protected pages -->
   <http>
