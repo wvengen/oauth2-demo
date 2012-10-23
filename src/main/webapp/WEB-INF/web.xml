@@ -1,41 +1,37 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<web-app 
-   xmlns="http://java.sun.com/xml/ns/javaee" 
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" 
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" 
    version="2.5">
 
-  <servlet>
-    <servlet-name>Hello</servlet-name>
-    <servlet-class>org.example.HelloServlet</servlet-class>
-  </servlet>
-
-  <!-- /hello is mapped to the Servlet -->
-  <servlet-mapping>
-    <servlet-name>Hello</servlet-name>
-    <url-pattern>/hello/*</url-pattern>
-  </servlet-mapping>
-
-  <!-- password-protect /secure using Spring Security -->
-  <servlet-mapping>
-    <servlet-name>Hello</servlet-name>
-    <url-pattern>/secure/*</url-pattern>
-  </servlet-mapping>
-  
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/security-app-context.xml</param-value>
-  </context-param>  
+    <param-value>classpath*:META-INF/spring/applicationContext*.xml /WEB-INF/spring-servlet.xml</param-value>
+  </context-param>
+  
+  <servlet>
+    <servlet-name>spring</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>spring</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>  
+
+  <!-- protected access required on a different url -->
   <filter>
     <filter-name>springSecurityFilterChain</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
   </filter>
+  
   <filter-mapping>
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/secure/*</url-pattern>
-  </filter-mapping>  
+  </filter-mapping>
 
 </web-app>
