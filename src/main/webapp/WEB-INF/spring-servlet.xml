@@ -18,21 +18,10 @@
   <!-- And serve static content as well -->
   <mvc:default-servlet-handler />
 
-  <!-- password-protected pages -->
-  <http>
-    <intercept-url pattern="/secure" access="ROLE_USER" />
-    <http-basic />
-    <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
-  </http>
-  
-  <oauth:resource-server id="resourceServerFilter" resource-id="HelloServlet" />
-
-  <authentication-manager>
-    <authentication-provider>
-      <user-service>
-        <user name="user" password="user" authorities="ROLE_USER" />
-      </user-service>
-    </authentication-provider>
-  </authentication-manager>
+  <!-- where our food is obtained -->
+  <beans:bean id="plateClient" class="org.example.PlateClient">
+    <beans:property name="apiurl"  value="http://localhost:8080/hello" />
+    <beans:property name="apiurls" value="http://localhost:8080/secure" />
+  </beans:bean>
 
 </beans:beans>
