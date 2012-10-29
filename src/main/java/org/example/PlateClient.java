@@ -15,7 +15,9 @@ import net.sf.json.JSONArray;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
  
@@ -26,7 +28,7 @@ public class PlateClient extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
     	try {
-            servePlate(response, readFood(new URI(apiurl)));    		
+            servePlate(response, readFood(new URI(apiurl), new SimpleClientHttpRequestFactory()));
     	} catch(URISyntaxException e) {
     		throw new ServletException(e);
     	}
@@ -35,20 +37,25 @@ public class PlateClient extends HttpServlet
     @RequestMapping(value="/secure")
     protected void doSecure(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        servePlate(response, new String[]{"empty shells"});
+    	try {
+    		oauth2RestTemplate.getAccessToken();
+            servePlate(response, readFood(new URI(apiurls), oauth2RestTemplate.getRequestFactory()));
+    	} catch(URISyntaxException e) {
+    		throw new ServletException(e);
+    	}
     }
-    
+
     // return array from json returned by given url
-    private String[] readFood(URI url) throws IOException
+    private String[] readFood(URI url, ClientHttpRequestFactory factory) throws IOException
     {
-    	ClientHttpRequest request = new SimpleClientHttpRequestFactory().createRequest(url, HttpMethod.GET);
+    	ClientHttpRequest request = factory.createRequest(url, HttpMethod.GET);
     	request.getHeaders().add("Accept", "application/json");
     	InputStream is = request.execute().getBody();
     	StringBuffer data = new StringBuffer();
     	while (is.available()>0) data.append((char)is.read());
     	return (String[])JSONArray.fromObject(data.toString()).toArray(new String[0]);
     }
-
+        
     // output html
     private void servePlate(HttpServletResponse response, String[] what) throws IOException
     {
@@ -67,4 +74,8 @@ public class PlateClient extends HttpServlet
     @Required public void setApiurl(String a) { apiurl = a; }
     private String apiurls = null;
     @Required public void setApiurls(String a) { apiurls = a; }
+    
+    // for access to OAuth2-protected resources, set by spring-security-oauth
+    private OAuth2RestTemplate oauth2RestTemplate;
+    @Required public void setOauth2RestTemplate(OAuth2RestTemplate a) { oauth2RestTemplate = a; }
 }
