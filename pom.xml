@@ -94,6 +94,9 @@
         <configuration>
           <path>/</path>
           <port>8081</port> <!-- different from the service -->
+          <systemProperties>
+            <org.apache.catalina.SESSION_COOKIE_NAME>JSESSIONID_CLIENT</org.apache.catalina.SESSION_COOKIE_NAME>
+          </systemProperties>
         </configuration>
       </plugin>
     </plugins>
