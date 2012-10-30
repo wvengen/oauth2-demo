@@ -36,18 +36,13 @@
   
   <oauth:client id="oauth2ClientFilter" />
   
-  <oauth:resource id="foodService" type="authorization_code" client-id="plate"
-                  access-token-uri="http://localhost:8082/oauth/authorize"
-                  user-authorization-uri="http://localhost:8082/oauth/user/authorize"
-                  pre-established-redirect-uri="http://localhost:8080/secure"
-                  scope="read" />
+  <oauth:resource id="foodService" type="authorization_code"
+                  client-id="oszmmu4ao39457jskhk8pwbja6x2fce"
+                  user-authorization-uri="https://localhost:8082/oauth/authorize"
+                  access-token-uri="https://localhost:8082/oauth/access_token"
+                  pre-established-redirect-uri="http://localhost:8081/secure"
+                  scope="read" />  
 
-  <!--define an oauth 2 resource for facebook. according to the facebook docs, the 'client-id' is the App ID, and the 'client-secret' is the App Secret -->
-  <oauth:resource id="facebook" type="authorization_code" client-id="233668646673605" client-secret="33b17e044ee6a4fa383f46ec6e28ea1d"
-                  authentication-scheme="query" access-token-uri="https://graph.facebook.com/oauth/access_token"
-                  user-authorization-uri="https://www.facebook.com/dialog/oauth"
-                  token-name="oauth_token" client-authentication-scheme="form" />
-                  
   <authentication-manager>
     <authentication-provider>
       <user-service>
@@ -55,5 +50,21 @@
       </user-service>
     </authentication-provider>
   </authentication-manager>
+
+  <!-- SSL configuration in rest calls -->
+  <beans:bean id="trustStore" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <beans:property name="targetObject" value="#{@systemProperties}" />
+    <beans:property name="targetMethod" value="putAll" />
+    <beans:property name="arguments"><beans:props>
+      <!-- Certificate Authorities for the rest endpoints -->
+      <!-- keytool -importcert -trustcacerts -noprompt -file ca.pem -keystore /tmp/cacert.jks -storepass default -->
+      <beans:prop key="javax.net.ssl.trustStore">/tmp/cacerts.jks</beans:prop>
+      <beans:prop key="javax.net.ssl.trustStorePassword">default</beans:prop>
+      <!-- This service's client certificate -->
+      <!-- keytool -importkeystore -srckeystore client.p12 -srcstoretype pkcs12 -srcstorepass xyz -destkeystore /tmp/client.jks -deststorepass default -->
+      <beans:prop key="javax.net.ssl.keyStore">/tmp/client.jks</beans:prop>
+      <beans:prop key="javax.net.ssl.keyStorePassword">default</beans:prop>
+    </beans:props></beans:property>
+  </beans:bean>
 
 </beans:beans>
