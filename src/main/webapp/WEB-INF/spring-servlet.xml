@@ -18,15 +18,22 @@
   <!-- And serve static content as well -->
   <mvc:default-servlet-handler />
 
-  <!-- password-protected pages -->
+  <!-- password&OAuth2-protected pages -->
   <http>
-    <intercept-url pattern="/secure" access="ROLE_USER" />
     <http-basic />
+    <intercept-url pattern="/secure" access="IS_AUTHENTICATED_FULLY" />
     <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
   </http>
   
-  <oauth:resource-server id="resourceServerFilter" resource-id="HelloServlet" />
+  <oauth:resource-server id="resourceServerFilter" resource-id="HelloServlet" token-services-ref="tokenServices" />
+  
+  <beans:bean id="tokenServices" class="org.example.RemoteTokenServices">
+    <beans:property name="checkTokenEndpointUrl" value="https://localhost:8082/check_token" />
+    <beans:property name="clientId" value="foodservice" />
+    <beans:property name="clientSecret" value="secret" />
+  </beans:bean>
 
+  <!-- Username/password for HTTP basic auth -->
   <authentication-manager>
     <authentication-provider>
       <user-service>
@@ -34,5 +41,21 @@
       </user-service>
     </authentication-provider>
   </authentication-manager>
+
+  <!-- SSL configuration in rest calls -->
+  <beans:bean id="trustStore" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <beans:property name="targetObject" value="#{@systemProperties}" />
+    <beans:property name="targetMethod" value="putAll" />
+    <beans:property name="arguments"><beans:props>
+      <!-- Certificate Authorities for the rest endpoints -->
+      <!-- keytool -importcert -trustcacerts -noprompt -file ca.pem -keystore /tmp/cacert.jks -storepass default -->
+      <beans:prop key="javax.net.ssl.trustStore">/tmp/cacerts.jks</beans:prop>
+      <beans:prop key="javax.net.ssl.trustStorePassword">default</beans:prop>
+      <!-- This service's client certificate -->
+      <!-- keytool -importkeystore -srckeystore client.p12 -srcstoretype pkcs12 -srcstorepass xyz -destkeystore /tmp/client.jks -deststorepass default -->
+      <beans:prop key="javax.net.ssl.keyStore">/tmp/client.jks</beans:prop>
+      <beans:prop key="javax.net.ssl.keyStorePassword">default</beans:prop>
+    </beans:props></beans:property>
+  </beans:bean>
 
 </beans:beans>
