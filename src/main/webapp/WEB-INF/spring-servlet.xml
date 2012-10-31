@@ -28,9 +28,8 @@
   <oauth:resource-server id="resourceServerFilter" resource-id="HelloServlet" token-services-ref="tokenServices" />
   
   <beans:bean id="tokenServices" class="org.example.RemoteTokenServices">
-    <beans:property name="checkTokenEndpointUrl" value="https://localhost:8082/check_token" />
-    <beans:property name="clientId" value="foodservice" />
-    <beans:property name="clientSecret" value="secret" />
+    <beans:property name="checkTokenEndpointUrl" value="https://localhost:8082/oauth/check_token" />
+    <beans:property name="scope" value="read" />
   </beans:bean>
 
   <!-- Username/password for HTTP basic auth -->

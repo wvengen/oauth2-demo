@@ -10,14 +10,13 @@
  * subcomponents is subject to the terms and conditions of the
  * subcomponent's license, as noted in the LICENSE file.
  */
-/* obtained from: https://raw.github.com/cloudfoundry/uaa/master/common/src/main/java/org/cloudfoundry/identity/uaa/oauth/RemoteTokenServices.java */
+/* obtained from: https://raw.github.com/cloudfoundry/uaa/master/common/src/main/java/org/cloudfoundry/identity/uaa/oauth/RemoteTokenServices.java
+ * modified to work with ndg_oauth_server */
 package org.example;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,16 +27,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
-import org.springframework.security.oauth2.provider.BaseClientDetails;
 import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
-import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
@@ -45,6 +39,7 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Dave Syer
+ * @author W. van Engen
  * 
  */
 public class RemoteTokenServices implements ResourceServerTokenServices {
@@ -55,9 +50,7 @@ public class RemoteTokenServices implements ResourceServerTokenServices {
 
 	private String checkTokenEndpointUrl;
 
-	private String clientId;
-
-	private String clientSecret;
+	private String scope;
 
 	public void setRestTemplate(RestOperations restTemplate) {
 		this.restTemplate = restTemplate;
@@ -66,71 +59,32 @@ public class RemoteTokenServices implements ResourceServerTokenServices {
 	public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl) {
 		this.checkTokenEndpointUrl = checkTokenEndpointUrl;
 	}
-
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
-
-	public void setClientSecret(String clientSecret) {
-		this.clientSecret = clientSecret;
+	
+	public void setScope(String scope) {
+		this.scope = scope;
 	}
 
 	public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException {
 
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<String, String>();
-		formData.add("token", accessToken);
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", getAuthorizationHeader(clientId, clientSecret));
-		Map<String, Object> map = postForMap(checkTokenEndpointUrl, formData, headers);
+		formData.add("access_token", accessToken);
+		if (scope!=null) formData.add("scope", scope);
+		Map<String, Object> map = postForMap(checkTokenEndpointUrl, formData, null);
 
 		if (map.containsKey("error")) {
 			logger.debug("check_token returned error: " + map.get("error"));
 			throw new InvalidTokenException(accessToken);
 		}
 
-		Assert.state(map.containsKey("client_id"), "Client id must be present in response from auth server");
-		String remoteClientId = (String) map.get("client_id");
+		List<String> scopes = null;
+		if (scope!=null)
+			scopes = Arrays.asList(scope.split("\\s*,\\s*"));
+		// TODO proper client id from certificate dn
+		DefaultAuthorizationRequest clientAuthentication = new DefaultAuthorizationRequest(null, scopes);
 
-		Set<String> scope = new HashSet<String>();
-		if (map.containsKey("scope")) {
-			@SuppressWarnings("unchecked")
-			Collection<String> values = (Collection<String>) map.get("scope");
-			scope.addAll(values);
-		}
-		DefaultAuthorizationRequest clientAuthentication = new DefaultAuthorizationRequest(remoteClientId, scope);
-
-		if (map.containsKey("resource_ids") || map.containsKey("client_authorities")) {
-			Set<String> resourceIds = new HashSet<String>();
-			if (map.containsKey("resource_ids")) {
-				@SuppressWarnings("unchecked")
-				Collection<String> values = (Collection<String>) map.get("resource_ids");
-				resourceIds.addAll(values);
-			}
-			Set<GrantedAuthority> clientAuthorities = new HashSet<GrantedAuthority>();
-			if (map.containsKey("client_authorities")) {
-				@SuppressWarnings("unchecked")
-				Collection<String> values = (Collection<String>) map.get("client_authorities");
-				clientAuthorities.addAll(getAuthorities(values));
-			}
-			BaseClientDetails clientDetails = new BaseClientDetails();
-			clientDetails.setClientId(remoteClientId);
-			clientDetails.setResourceIds(resourceIds);
-			clientDetails.setAuthorities(clientAuthorities);
-			clientAuthentication.addClientDetails(clientDetails);
-		}
-
-		Set<GrantedAuthority> userAuthorities = new HashSet<GrantedAuthority>();
-		if (map.containsKey("user_authorities")) {
-			@SuppressWarnings("unchecked")
-			Collection<String> values = (Collection<String>) map.get("user_authorities");
-			userAuthorities.addAll(getAuthorities(values));
-		}
-		else {
-			// User authorities had better not be empty or we might mistake user for unauthenticated
-			userAuthorities.addAll(getAuthorities(scope));
-		}
-		String username = (String) map.get("user_name");
-		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(username, null, userAuthorities);
+		// TODO get username from somewhere
+		String username = "<someone>";
+		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(username, null, null);
 
 		clientAuthentication.setApproved(true);
 		return new OAuth2Authentication(clientAuthentication, userAuthentication);
@@ -141,25 +95,10 @@ public class RemoteTokenServices implements ResourceServerTokenServices {
 		throw new UnsupportedOperationException("Not supported: read access token");
 	}
 
-	private Set<GrantedAuthority> getAuthorities(Collection<String> authorities) {
-		Set<GrantedAuthority> result = new HashSet<GrantedAuthority>();
-		for (String authority : authorities) {
-			result.add(new SimpleGrantedAuthority(authority));
-		}
-		return result;
-	}
-
-	private String getAuthorizationHeader(String clientId, String clientSecret) {
-		String creds = String.format("%s:%s", clientId, clientSecret);
-		try {
-			return "Basic " + new String(Base64.encode(creds.getBytes("UTF-8")));
-		}
-		catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException("Could not convert String");
-		}
-	}
-
 	private Map<String, Object> postForMap(String path, MultiValueMap<String, String> formData, HttpHeaders headers) {
+		if (headers == null) {
+			headers = new HttpHeaders();
+		}
 		if (headers.getContentType() == null) {
 			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		}
