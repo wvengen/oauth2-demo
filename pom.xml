@@ -17,12 +17,6 @@
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>
-    <!-- JSON library; net.sf.json-lib is missing a signature, so use this one -->
-    <dependency>
-      <groupId>org.apache.servicemix.bundles</groupId>
-      <artifactId>org.apache.servicemix.bundles.json-lib</artifactId>
-      <version>2.4_1</version>
-    </dependency>
     <!-- spring security -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -67,6 +61,12 @@
           <artifactId>spring-core</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!-- for connecting to JSON REST endpoints -->
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>1.9.2</version>
     </dependency>
   </dependencies>
 
