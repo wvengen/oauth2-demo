@@ -2,13 +2,17 @@ OAuth2 demonstration
 ====================
 
 Please see http://wiki.nikhef.nl/grid/CLARIN/OAuth2_use_case for more details.
-('''todo:''' describe project)
+(**todo:** describe project)
 
 This is a demonstration of a complete OAuth2 setup, with separate client,
 authorization server and resource server roles. Client and resource are
 Java-servlet-based, the authorization server can be anything.
 
-''Please note that this is quite a work in progress.''
+
+*Please note that this is quite a work in progress.*
+
+*DOES NOT work currently without disabling the https requirement by patching
+ndg\_oauth\_server's source code. Sorry!*
 
 
 Scenario
@@ -20,13 +24,13 @@ available that can only be obtained when being logged in.
 
 Three services are running simultaneously, and interacting:
 
-* '''Client''' -
+* __Client__ -
   website that the user visits. Obtains a list of food from the service.
 
-* '''Authorization Server (AS)''' -
+* __Authorization Server (AS)__ -
   where checks for authorization are executed.
 
-* '''Service''' -
+* __Service__ -
   web service that returns a food list. This is list different for
   authenticated and anonymous users. Relies on the authorization server for
   verifying authenticated requests (bearer tokens).
