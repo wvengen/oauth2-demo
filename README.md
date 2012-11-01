@@ -40,18 +40,18 @@ Each of these services is kept in a separate branch of this project. So checkout
 the three branches and run the service contained in each.
 
 ```shell
-git clone https://github.com/wvengen/oauth2-demo
 # in one terminal
-git clone -b service-master oauth2-demo service-master
+git clone -b service-master https://github.com/wvengen/oauth2-demo service-master
 cd service-master
 mvn tomcat:run
 # in another terminal
-git clone -b as-ndg-master oauth2-demo as-ndg-master
+git clone -b as-ndg-master https://github.com/wvengen/oauth2-demo as-ndg-master
 easy_install [--user] ndg_oauth_server
+ # make sure Python Paste is installed, with the paster command
 cd as-ndg-master
-python bearer_tok_server_app_serve.py
+paster serve bearer_tok_server_app.ini
 # in again another terminal
-git clone -b client-master oauth2-demo client-master
+git clone -b client-master https://github.com/wvengen/oauth2-demo client-master
 cd client-master
 mvn tomcat:run
 ```
