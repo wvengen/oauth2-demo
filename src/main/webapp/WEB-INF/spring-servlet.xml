@@ -28,7 +28,7 @@
   <oauth:resource-server id="resourceServerFilter" resource-id="HelloServlet" token-services-ref="tokenServices" />
   
   <beans:bean id="tokenServices" class="org.example.RemoteTokenServices">
-    <beans:property name="checkTokenEndpointUrl" value="https://localhost:8082/oauth/check_token" />
+    <beans:property name="checkTokenEndpointUrl" value="http://localhost:8082/oauth/check_token" />
     <beans:property name="scope" value="read" />
   </beans:bean>
 
@@ -41,7 +41,7 @@
     </authentication-provider>
   </authentication-manager>
 
-  <!-- SSL configuration in rest calls -->
+  <!-- SSL configuration in rest calls; only required when using an ssl-protected check_token endpoint -->
   <beans:bean id="trustStore" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <beans:property name="targetObject" value="#{@systemProperties}" />
     <beans:property name="targetMethod" value="putAll" />
