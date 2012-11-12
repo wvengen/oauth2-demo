@@ -95,6 +95,15 @@
           <path>/</path>
           <port>8081</port> <!-- different from the service -->
           <systemProperties>
+            <!-- certificate authority, used to verify certificates of endpoints (both access token & rest api) -->
+            <javax.net.ssl.trustStore>${project.basedir}/cacert.jks</javax.net.ssl.trustStore>
+            <javax.net.ssl.trustStorePassword>default</javax.net.ssl.trustStorePassword>
+
+            <!-- client certificate (only needed when used as client authentication method) -->
+            <!-- <javax.net.ssl.keyStore></javax.net.ssl.keyStore> -->
+            <!-- <javax.net.ssl.keyStorePassword>default</javax.net.ssl.keyStorePassword> -->
+
+            <!-- avoid confusion between session ids on multiple ports -->
             <org.apache.catalina.SESSION_COOKIE_NAME>JSESSIONID_CLIENT</org.apache.catalina.SESSION_COOKIE_NAME>
           </systemProperties>
         </configuration>
