@@ -17,9 +17,11 @@ package org.example;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.nio.charset.Charset;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -50,7 +52,11 @@ public class RemoteTokenServices implements ResourceServerTokenServices {
 
 	private String checkTokenEndpointUrl;
 
-	private String scope;
+	private String checkTokenEndpointUsername = null;
+
+	private String checkTokenEndpointPassword= null;
+
+	private String scope = "";
 
 	public void setRestTemplate(RestOperations restTemplate) {
 		this.restTemplate = restTemplate;
@@ -60,6 +66,14 @@ public class RemoteTokenServices implements ResourceServerTokenServices {
 		this.checkTokenEndpointUrl = checkTokenEndpointUrl;
 	}
 	
+	public void setCheckTokenEndpointUsername(String username) {
+		this.checkTokenEndpointUsername = username;
+	}
+
+	public void setCheckTokenEndpointPassword(String password) {
+		this.checkTokenEndpointPassword = password;
+	}
+
 	public void setScope(String scope) {
 		this.scope = scope;
 	}
@@ -69,7 +83,10 @@ public class RemoteTokenServices implements ResourceServerTokenServices {
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<String, String>();
 		formData.add("access_token", accessToken);
 		if (scope!=null) formData.add("scope", scope);
-		Map<String, Object> map = postForMap(checkTokenEndpointUrl, formData, null);
+		HttpHeaders headers = new HttpHeaders();
+		if (checkTokenEndpointUsername != null && checkTokenEndpointPassword != null)
+			setBasicAuth(headers, checkTokenEndpointUsername, checkTokenEndpointPassword);
+		Map<String, Object> map = postForMap(checkTokenEndpointUrl, formData, headers);
 
 		if (map.containsKey("error")) {
 			logger.debug("check_token returned error: " + map.get("error"));
@@ -109,6 +126,12 @@ public class RemoteTokenServices implements ResourceServerTokenServices {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> result = (Map<String, Object>) map;
 		return result;
+	}
+
+	private void setBasicAuth(HttpHeaders headers, String username, String password) {
+		String authz = username + ":" + password;
+		byte[] authzencoded = Base64.encodeBase64(authz.getBytes(Charset.forName("US-ASCII")));
+		headers.set("Authorization", "Basic " + new String(authzencoded));
 	}
 
 }
