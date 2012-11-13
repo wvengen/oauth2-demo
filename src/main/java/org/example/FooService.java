@@ -31,8 +31,12 @@ public class FooService extends HttpServlet
 
         // select list according to authorization
         String[] list = listOpen;
-        if (request.getRemoteUser() != null)
+        if (request.getRemoteUser() != null) {
         	list = listProt;
+		// add username to last item, when available
+		if (request.getRemoteUser() != "")
+			list[list.length-1] = request.getRemoteUser() + "'s very own grape";
+	}
 
         // output
         response.setStatus(HttpServletResponse.SC_OK);

@@ -82,8 +82,9 @@ public class RemoteTokenServices implements ResourceServerTokenServices {
 		// TODO proper client id from certificate dn
 		DefaultAuthorizationRequest clientAuthentication = new DefaultAuthorizationRequest(null, scopes);
 
-		// TODO get username from somewhere
-		String username = "<someone>";
+		String username = ""; // empty string for authenticated user but identity not known
+		if (map.containsKey("user_name"))
+			username = (String) map.get("user_name");
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken(username, null, null);
 
 		clientAuthentication.setApproved(true);
