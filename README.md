@@ -32,10 +32,11 @@ Three services are running simultaneously, and interacting:
   verifying authenticated requests (bearer tokens).
 
 
-Each of these services is kept in a separate branch of this project. So checkout
-the three branches and run the service contained in each. Currently a patched
-version of ndg_oauth_server is required, which is available at
-[github](https://github.com/wvengen/ndg_oauth_server).
+Each of these services is kept in a separate branch of this project. So
+checkout the three branches and run the service contained in each. Currently a
+patched version of ndg_oauth_server is required, which is available at
+[github](https://github.com/wvengen/ndg_oauth_server) (covered in sequence
+below).
 
 ```shell
 # in one terminal
