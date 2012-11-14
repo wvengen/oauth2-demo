@@ -6,7 +6,7 @@ Please see http://wiki.nikhef.nl/grid/CLARIN/OAuth2_use_case for more details.
 This is a demonstration of a complete OAuth2 setup, with separate client,
 authorization server and resource server roles. Client and resource are
 Java-servlet-based, the authorization server can be anything. At the moment,
-[Spring Security] and [Spring Security OAuth] are used at the client and
+[Spring Security] plus [Spring Security OAuth] are used at the client and
 resource side, while [ndg_oauth_server] is used as the authorization server.
 
 
@@ -36,7 +36,7 @@ Getting started
 
 The demonstration is setup to run all the services on localhost, so that it
 works out of the box. Requirements: [Maven], [Python] with [setuptools]
-and [pyOpenSSL]. You can [install the requirements on Debian].
+and [pyOpenSSL]. Debian packages: `maven python-setuptools python-openssl`.
 
 Each of these services is kept in a separate branch of this project. So
 checkout the three branches and run the service contained in each. 
@@ -60,8 +60,32 @@ mvn tomcat:run
 
 The service runs by default on port 8080, the authorization server on port 8082
 and the client on port 8081. Visit the client at http://localhost:8081/ and
-when asked for a username/password supply `user`/`user`.
-Clear cookies to clear login.
+when asked for a username/password supply `user`/`user` (once to log into the
+client and once at the authorization server).
+Clear cookies to logout from the AS.
+
+
+Run services on a single remote host
+------------------------------------
+
+When you want to run these services on a single remote host, the configuration
+needs to be adapted a little so that URLs that are exposed to the user can be
+found.
+
+1. __Authorization server URL__: the client needs to redirect the user to the
+   AS at a publically visible URL. Modify the client's
+   `src/main/webapp/WEB-INF/spring-security.xml`:
+       <oauth:resource id="foodService" ...
+           user-authorization-uri="https://my.example.com:8082/oauth/authorize" ...
+
+2. __Redirect URL__: the authorization server needs to know that it is allowed
+   to redirect back to the client at a certain URL. Modify the AS's
+   `client_register.ini` and add the client's secure URL:
+       redirect_uris=http://localhost:8081/secure,http://my.example.com:8081/secure
+
+Please note that the server certificate for the authorization server will now
+appear as invalid to the user, since the certificate supplied with this
+demonstration only includes localhost. You can ignore the error for this demo.
 
 
 
@@ -75,4 +99,3 @@ Clear cookies to clear login.
 [Python]: http://www.python.org/
 [setuptools]: http://pypi.python.org/pypi/setuptools
 [pyOpenSSL]: http://pypi.python.org/pypi/pyOpenSSL
-[install the requirements on Debian]: apt:maven2,python-setuptools,python-openssl
