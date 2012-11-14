@@ -6,9 +6,9 @@ Please see http://wiki.nikhef.nl/grid/CLARIN/OAuth2_use_case for more details.
 
 This is a demonstration of a complete OAuth2 setup, with separate client,
 authorization server and resource server roles. Client and resource are
-Java-servlet-based, the authorization server can be anything.
-
-*Please note that this is quite a work in progress.*
+Java-servlet-based, the authorization server can be anything. At the moment,
+[Spring Security] is used at the client and resource side, while
+[ndg_oauth_server] is used as the authorization server.
 
 
 Scenario
@@ -33,10 +33,9 @@ Three services are running simultaneously, and interacting:
 
 
 Each of these services is kept in a separate branch of this project. So
-checkout the three branches and run the service contained in each. Currently a
-patched version of ndg_oauth_server is required, which is available at
-[github](https://github.com/wvengen/ndg_oauth_server) (covered in sequence
-below).
+checkout the three branches and run the service contained in each. 
+The current [ndg_oauth_server] has been slightly modified with respect
+to the [NDG ndg_oauth_server], work is in progress to merge this upstream.
 
 ```shell
 # in one terminal
@@ -60,3 +59,7 @@ the authorization server on http://localhost:8082/
 and the client on http://localhost:8081/ . Visit the client, and when asked for
 a username/password supply `user`/`user`. Clear cookies to clear login.
 
+
+[Spring Security]: http://static.springsource.org/spring-security/
+[ndg_oauth_server]: https://github.com/wvengen/ndg_oauth_server
+[NDG ndg_oauth_server]: http://ndg-security.ceda.ac.uk/browser/trunk/ndg_oauth
