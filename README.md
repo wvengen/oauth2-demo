@@ -75,13 +75,15 @@ found.
 1. __Authorization server URL__: the client needs to redirect the user to the
    AS at a publically visible URL. Modify the client's
    `src/main/webapp/WEB-INF/spring-security.xml`:
-       <oauth:resource id="foodService" ...
-           user-authorization-uri="https://my.example.com:8082/oauth/authorize" ...
+
+        <oauth:resource id="foodService" ...
+            user-authorization-uri="https://my.example.com:8082/oauth/authorize" ...
 
 2. __Redirect URL__: the authorization server needs to know that it is allowed
    to redirect back to the client at a certain URL. Modify the AS's
    `client_register.ini` and add the client's secure URL:
-       redirect_uris=http://localhost:8081/secure,http://my.example.com:8081/secure
+
+        redirect_uris=http://localhost:8081/secure,http://my.example.com:8081/secure
 
 Please note that the server certificate for the authorization server will now
 appear as invalid to the user, since the certificate supplied with this
