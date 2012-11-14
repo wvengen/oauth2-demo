@@ -8,11 +8,7 @@ This is a demonstration of a complete OAuth2 setup, with separate client,
 authorization server and resource server roles. Client and resource are
 Java-servlet-based, the authorization server can be anything.
 
-
 *Please note that this is quite a work in progress.*
-
-*DOES NOT work currently without disabling the https requirement by patching
-ndg\_oauth\_server's source code. Sorry!*
 
 
 Scenario
@@ -37,7 +33,9 @@ Three services are running simultaneously, and interacting:
 
 
 Each of these services is kept in a separate branch of this project. So checkout
-the three branches and run the service contained in each.
+the three branches and run the service contained in each. Currently a patched
+version of ndg_oauth_server is required, which is available at
+[github](https://github.com/wvengen/ndg_oauth_server).
 
 ```shell
 # in one terminal
@@ -46,7 +44,7 @@ cd service-master
 mvn tomcat:run
 # in another terminal
 git clone -b as-ndg-master https://github.com/wvengen/oauth2-demo as-ndg-master
-easy_install [--user] ndg_oauth_server
+easy_install [--user] https://github.com/downloads/wvengen/ndg_oauth_server/ndg_oauth_server-0.4.0-py2.7.egg
  # make sure Python Paste is installed, with the paster command
 cd as-ndg-master
 paster serve bearer_tok_server_app.ini
