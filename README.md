@@ -45,9 +45,9 @@ cd service-master
 mvn tomcat:run
 # in another terminal
 git clone -b as-ndg-master https://github.com/wvengen/oauth2-demo as-ndg-master
-easy_install [--user] https://github.com/downloads/wvengen/ndg_oauth_server/ndg_oauth_server-0.4.0-py2.7.egg
- # make sure Python Paste is installed, with the paster command
+easy_install [--user] https://github.com/downloads/wvengen/ndg_oauth_server/ndg_oauth_server-0.4.0.tar.gz
 cd as-ndg-master
+PATH=$PATH:$HOME/.local/bin # if paster was installed as user
 paster serve bearer_tok_server_app.ini
 # in again another terminal
 git clone -b client-master https://github.com/wvengen/oauth2-demo client-master
