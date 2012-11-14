@@ -41,7 +41,6 @@
                   client-secret="xyz"
                   user-authorization-uri="https://localhost:8082/oauth/authorize"
                   access-token-uri="https://localhost:8082/oauth/access_token"
-                  pre-established-redirect-uri="http://localhost:8081/secure"
                   scope="read" />  
 
   <authentication-manager>
