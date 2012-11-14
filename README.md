@@ -7,8 +7,8 @@ Please see http://wiki.nikhef.nl/grid/CLARIN/OAuth2_use_case for more details.
 This is a demonstration of a complete OAuth2 setup, with separate client,
 authorization server and resource server roles. Client and resource are
 Java-servlet-based, the authorization server can be anything. At the moment,
-[Spring Security] is used at the client and resource side, while
-[ndg_oauth_server] is used as the authorization server.
+[Spring Security] and [Spring Security OAuth] are used at the client and
+resource side, while [ndg_oauth_server] is used as the authorization server.
 
 
 Scenario
@@ -61,5 +61,6 @@ a username/password supply `user`/`user`. Clear cookies to clear login.
 
 
 [Spring Security]: http://static.springsource.org/spring-security/
+[Spring Security OAuth]: https://github.com/SpringSource/spring-security-oauth
 [ndg_oauth_server]: https://github.com/wvengen/ndg_oauth_server
 [NDG ndg_oauth_server]: http://ndg-security.ceda.ac.uk/browser/trunk/ndg_oauth
