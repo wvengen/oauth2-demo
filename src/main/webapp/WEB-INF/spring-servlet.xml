@@ -39,9 +39,9 @@
   <oauth:resource id="foodService" type="authorization_code"
                   client-id="oszmmu4ao39457jskhk8pwbja6x2fce"
                   client-secret="xyz"
-                  user-authorization-uri="https://#{hostname}:8082/oauth/authorize"
+                  user-authorization-uri="https://localhost:8082/oauth/authorize"
                   access-token-uri="https://localhost:8082/oauth/access_token"
-                  pre-established-redirect-uri="http://#{hostname}:8081/secure"
+                  pre-established-redirect-uri="http://localhost:8081/secure"
                   scope="read" />  
 
   <authentication-manager>
@@ -51,9 +51,5 @@
       </user-service>
     </authentication-provider>
   </authentication-manager>
-
-  <!-- get hostname for authorization server, so it just works when run on single host -->
-  <beans:bean id="localhost" class="java.net.InetAddress" factory-method="getLocalHost" />
-  <beans:bean id="hostname" factory-bean="localhost" factory-method="getCanonicalHostName" />
 
 </beans:beans>
