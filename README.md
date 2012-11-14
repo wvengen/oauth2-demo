@@ -93,18 +93,15 @@ demonstration only includes localhost. You can ignore the error for this demo.
 Running behind Apache
 ---------------------
 
-For a production deployments you'll probably want to run services using a 
+For a production deployments you'll probably want to run services using a
 webserver like [Apache].
-
 How the authorization server can run from Apache is explained in ndg_oauth_server's
-[README](http://ndg-security.ceda.ac.uk/browser/trunk/ndg_oauth/README.txt#L266).
-But you can do this as well:
+[README](http://ndg-security.ceda.ac.uk/browser/trunk/ndg_oauth/README.txt#L266),
+but the following would work as well:
 
 1. Enable [modwsgi] for Apache. Debian package: `libapache2-mod-wsgi`.
 
-2. Make sure SSL is enabled, and you have a key and certificate for your host.
-
-3. Add the OAuth2 AS to the apache configuration. On Debian, you could create
+2. Add the OAuth2 AS to the apache configuration. On Debian, you could create
    the file `/etc/apache2/sites-available/oauth2-as` and run `a2ensite oauth2-as`.
 
         <Directory "/path/to/as-ndg-master/">
@@ -124,7 +121,23 @@ But you can do this as well:
         WSGIDaemonProcess oauth2-server processes=2 threads=15 display-name=%{GROUP} user=user group=user
         WSGIProcessGroup oauth2-server
 
+        # here the OAuth2 AS is served at /, which means that the authorization
+        #   endpoint can be found at /oauth/authorize (with supplied .ini file)
         WSGIScriptAlias / /path/to/as-ndg-master/serve.wsgi
+
+3. Make sure SSL is enabled, and you have a key and certificate for your host.
+   On Debian, you may get started by running `a2ensite default-ssl`.
+
+4. Make sure the certificate authority used for the AS is trusted by both
+   clients and resources. For the demonstration, you can use the supplied
+   `host.pem` for `SSLCertificateFile` and `SSLCertificateKeyFile`, and
+   `host_ca.pem` for `SSLCertificateChainFile`.
+
+You may want to run Apache on port 8082 with SSL enabled, so that the demonstration
+works without other configuration changes. On Debian, this is done by changing
+`/etc/apache2/ports.conf` to only `Listen 8082`, and
+`/etc/apache2/sites-enabled/default-ssl`'s virtual host definition to
+`<VirtualHost _default_:8082>`.
 
 
 Using single sign-on at the authorization server
