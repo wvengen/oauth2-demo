@@ -7,7 +7,7 @@ To Run
 
 * Make sure you have installed the `ndg_oauth_server` Python package:
       easy_install [--user] ndg_oauth_server
-  This has been tested with version 0.3.1 of `ndg_oauth_server`.
+  This has been tested with version 0.3.1 and 0.4.0 of `ndg_oauth_server`.
 
 * Run this application.
       python bearer_tok_server_app_serve.py
