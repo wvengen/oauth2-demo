@@ -235,11 +235,11 @@ This section can only be finalised when the move has been made. For now, it
 entails at least:
 
 * Turning off debugging options on the authorization server
-  * In `[filter:AuthenticationFormFilter]`, enable `set debug = false`
-  * Only log `WARNING`s or `INFO` messages by changing their `level`
+  - In `[filter:AuthenticationFormFilter]`, enable `set debug = false`
+  - Only log `WARNING`s or `INFO` messages by changing their `level`
 
 * Make sure any test accounts in `passwd` are removed.
-  * potentially disable local accounts completely in `repoze_who.ini`.
+  - potentially disable local accounts completely in `repoze_who.ini`.
 
 * The example Shibboleth configuration here is probably not suitable for
   your production situation. Make sure it is sound and safe.
