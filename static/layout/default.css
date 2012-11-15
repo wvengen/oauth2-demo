@@ -32,24 +32,20 @@ div.hidden {
     color: #8c8c8c;
     height: 60px;
     background: #ffffff;
+    margin-top:10px; 
     margin-bottom: 10px; 
     padding-top: 3px; 
     padding-right: 10px; 
     padding-left: 10px; 
     clear: both; 
-    margin-top:10px; 
     border: solid #8c8c8c;
     border-width: 0 0 2px 0;
     background-repeat:no-repeat;
 }
-
-#logo{
- position:absolute;
- top:15px;
- left:20px;
- width:200px;
- height:63px;
- z-index:900;
+#header #logo {
+    position: relative;
+    top: -3px;
+    float: right;
 }
 
 /* We don't want borders on linked images */

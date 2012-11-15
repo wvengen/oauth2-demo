@@ -13,11 +13,12 @@
     </head>
 
     <div py:def="header()" id="header">
+        <div id="logo">
+          <a href="http://www.clarin.eu/"><img src="${c.baseURL}/layout/clarin_mini.png" alt="CLARIN"/></a>
+          <a href="http://www.biggrid.nl/"><img src="${c.baseURL}/layout/biggrid_mini.png" alt="BiG Grid"/></a>
+        </div>
         <div py:if="c.heading">
             <h1>${c.heading}</h1>
-        </div>
-        <div py:if="c.leftLogo" id="logo">
-            <img src="${c.leftLogo}" alt="${c.leftAlt}" />
         </div>
     </div>
 
@@ -25,25 +26,12 @@
     <div py:def="footer()" id="footer">
         <table width="100%"><tbody>
             <tr>
-                <td align="left" width="60%" valign="top">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td valign="top" py:if="c.leftImage and c.leftLink"><span py:replace="linkimage(c.leftLink, c.leftImage, c.leftAlt)"/></td>
-                                <td valign="top" py:if="c.footerText">${HTML(c.footerText)}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <td align="left" width="60%" valign="middle">
+                  <span py:if="c.footerText">${HTML(c.footerText)}</span>
                 </td>
-                <td align="right" valign="top" width="40%"><span py:replace="linkimage(c.rightLink, c.rightImage, c.rightAlt)"/></td>
+                <td align="right" valign="middle" width="40%">
+                </td>
             </tr>
         </tbody></table>
     </div>
-    
-    <!-- Utility Functions follow -->
-    
-    <!-- hyperlinked image -->
-    <span py:def="linkimage(linkref,imageref,alttext)">
-        <a href="$linkref"><img src="$imageref" alt="$alttext" title="$alttext"/></a>
-    </span>
 </html>
