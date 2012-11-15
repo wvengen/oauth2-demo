@@ -238,6 +238,9 @@ entails at least:
   * In `[filter:AuthenticationFormFilter]`, enable `set debug = false`
   * Only log `WARNING`s or `INFO` messages by changing their `level`
 
+* Make sure any test accounts in `passwd` are removed.
+  * potentially disable local accounts completely in `repoze_who.ini`.
+
 * The example Shibboleth configuration here is probably not suitable for
   your production situation. Make sure it is sound and safe.
 
