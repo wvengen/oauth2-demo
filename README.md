@@ -228,6 +228,21 @@ given here.
    Finally restart Apache.
 
 
+Moving to production
+--------------------
+
+This section can only be finalised when the move has been made. For now, it
+entails at least:
+
+* Turning off debugging options on the authorization server
+  * In `[filter:AuthenticationFormFilter]`, enable `set debug = false`
+  * Only log `WARNING`s or `INFO` messages by changing their `level`
+
+* The example Shibboleth configuration here is probably not suitable for
+  your production situation. Make sure it is sound and safe.
+
+* Check permissions on files and directories used.
+
 
 [Spring Security]: http://static.springsource.org/spring-security/
 [Spring Security OAuth]: https://github.com/SpringSource/spring-security-oauth
