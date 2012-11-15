@@ -74,7 +74,7 @@ found.
 
 1. __Authorization server URL__: the client needs to redirect the user to the
    AS at a publically visible URL. Modify the client's
-   `src/main/webapp/WEB-INF/spring-security.xml`:
+   `src/main/webapp/WEB-INF/spring-servlet.xml`:
 
         <oauth:resource id="foodService" ...
             user-authorization-uri="https://my.example.com:8082/oauth/authorize" ...
@@ -133,9 +133,9 @@ but the following would work as well:
    `host.pem` for `SSLCertificateFile` and `SSLCertificateKeyFile`, and
    `host_ca.pem` for `SSLCertificateChainFile`.
 
-You may want to run Apache on port 8082 with SSL enabled, so that the demonstration
-works without other configuration changes. On Debian, this is done by changing
-`/etc/apache2/ports.conf` to only `Listen 8082`, and
+You may want to run Apache on port 8082 with SSL enabled, so that the
+demonstration works without other configuration changes. On Debian, this is
+done by changing `/etc/apache2/ports.conf` to `Listen 8082`, and
 `/etc/apache2/sites-enabled/default-ssl`'s virtual host definition to
 `<VirtualHost _default_:8082>`.
 
@@ -149,9 +149,79 @@ is outside the scope of this demonstration (it is similar to enabling it for
 the AS).
 
 Assuming that the AS is run using Apache, as described above, the [Shibboleth]
-module can be used to enable SAML single sign-on.
+module can be used to enable SAML single sign-on. This is
+[covered](https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig) at
+[many](http://www.edugate.ie/Support/Technical%20Resources/Installation%20Guides/Service%20Provider%20Guides/shibboleth-2-service-provi-0)
+[other](https://itservices.stanford.edu/service/shibboleth/sp)
+[places](http://www.switch.ch/aai/support/serviceproviders/sp-access-rules.html).
+To get started, a very short overview of connecting to Feide's [OpenIdP] is
+given here.
 
-**TODO** finish this
+1. Install the Shibboleth daemon and the Apache module.
+   Debian package: `libapache2-mod-shib2`, then run `a2enmod shib2`.
+   You may want to run `shib-keygen` as well to generate a default certificate.
+
+2. Configure the Shibboleth daemon in `/etc/shibboleth/shibboleth2.xml`.
+   This includes the sections `ApplicationDefaults` and `Sessions` and
+   `MetadataProvider`. For OpenIdP, the following adaptation would suffice:
+
+        <ApplicationDefaults ...
+             entityID="https://my.example.com:8082/oauth" ...>
+
+          <Sessions ...>
+             <SessionInitiator type="Chaining" Location="/Login" isDefault="true" id="Intranet"
+                     relayState="cookie" entityID="https://openidp.feide.no">
+               ...
+             </SessionInitiator>
+             ...
+          </Sessions>
+
+          <MetadataProvider>
+            <MetadataProvider type="XML" file="openidp-metadata.xml"/>
+          </MetadataProvider>
+
+        </ApplicationDefaults>
+
+   Then download the [OpenIdP metadata](https://openidp.feide.no/simplesaml/saml2/idp/metadata.php)
+   into the file `openidp-metadata.xml`.
+
+   For Feide's OpenIdP, you need to allow unscoped attributes. Add to
+   `/etc/shibboleth/attribute-policy.xml`:
+
+        <afp:AttributeFilterPolicy>
+          <afp:AttributeRule attributeID="eppn" />
+        </afp:AttributeFilterPolicy>
+
+   Then restart the Shibboleth daemon: `/etc/init.d/shibd restart`.
+
+   You probably need to register your service. This is done by pasting the
+   output of your SAML metadata, found at
+   http://my.example.com:8082/Shibboleth.sso/Metadata , into the 
+   [OpenIdP SAML registration](https://openidp.feide.no/simplesaml/module.php/metaedit/xmlimport.php)
+   page and completing the registration procedure.
+
+3. Configure Apache to require authentication at the AS:
+
+        # Require Shibboleth authentication for the authorize endpoint
+        <Location /client_authorization>
+          AuthType Shibboleth
+          Require shibboleth
+          ShibRequireSession On
+        </Location>
+        <Location /oauth/authorize>
+          AuthType Shibboleth
+          Require shibboleth
+          ShibRequireSession On
+        </Location>
+
+        # to keep Shibboleth URLs working with WSGIScriptAlias in the root
+        <Location /Shibboleth.sso>
+          SetHandler shib
+        </Location>
+        Alias /shibboleth-sp /usr/share/shibboleth
+
+   Finally restart Apache.
+
 
 
 [Spring Security]: http://static.springsource.org/spring-security/
@@ -165,3 +235,4 @@ module can be used to enable SAML single sign-on.
 [Apache]: http://httpd.apache.org/
 [Shibboleth]: http://shibboleth.net/
 [modwsgi]: https://code.google.com/p/modwsgi/
+[OpenIdP]: https://openidp.feide.no/
