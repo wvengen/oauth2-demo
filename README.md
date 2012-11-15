@@ -9,6 +9,11 @@ Java-servlet-based, the authorization server can be anything. At the moment,
 [Spring Security] plus [Spring Security OAuth] are used at the client and
 resource side, while [ndg_oauth_server] is used as the authorization server.
 
+View code for the
+[service](https://github.com/wvengen/oauth2-demo/tree/service-master),
+[authorization server](https://github.com/wvengen/oauth2-demo/tree/as-ndg-master),
+[client](https://github.com/wvengen/oauth2-demo/tree/client-master).
+
 
 Scenario
 --------
