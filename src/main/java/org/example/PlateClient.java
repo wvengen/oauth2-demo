@@ -3,23 +3,47 @@ package org.example;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.security.KeyPair;
+import java.security.Security;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
+import javax.security.cert.X509Certificate;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.bouncycastle.jce.PKCS10CertificationRequest;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.provider.PEMUtil;
+import org.bouncycastle.openssl.PEMWriter;
+import org.eclipse.persistence.internal.oxm.conversion.Base64;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.client.CommonsClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
+
+import eu.contrail.security.DelegatedCertClient;
+import eu.contrail.security.SecurityCommons;
  
 @Controller
 public class PlateClient extends HttpServlet
 {
+	static {
+		Security.addProvider(new BouncyCastleProvider());
+	}
+	
     @RequestMapping(value="/hello")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -34,9 +58,30 @@ public class PlateClient extends HttpServlet
     protected void doSecure(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
     	try {
+    		// create certificate request
+    		SecurityCommons sc = new SecurityCommons();
+    		KeyPair keyPair = sc.generateKeyPair("RSA", 2048);
+    		String signatureAlgorithm = "SHA256withRSA";
+    		String csr = sc.writeCSR(sc.createCSR(keyPair, "CN=ignored_username", signatureAlgorithm));
+    		
+    		// retrieve certificate from OAuth-protected service
     		oauth2RestTemplate.getAccessToken();
-            servePlate(response, readFood(new URI(apiurls), oauth2RestTemplate));
-    	} catch(URISyntaxException e) {
+    		oauth2RestTemplate.getMessageConverters().clear();
+    		oauth2RestTemplate.getMessageConverters().add(new FormHttpMessageConverter());
+    		oauth2RestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
+    		MultiValueMap<String, String> param = new LinkedMultiValueMap<String, String>();
+    		param.add("certificate_request", csr);
+    		String r = oauth2RestTemplate.postForObject(new URI(certurl), param, String.class);
+
+    		// for now, just print the certificate
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("text/html");
+            response.getWriter().println(r);
+
+    		// TODO then get resource using client-side certificate
+    		//RestTemplate rest = new RestTemplate();
+            //servePlate(response, readFood(new URI(apiurls), rest));
+    	} catch(Exception e) {
     		throw new ServletException(e);
     	}
     }
@@ -70,6 +115,8 @@ public class PlateClient extends HttpServlet
     @Required public void setApiurl(String a) { apiurl = a; }
     private String apiurls = null;
     @Required public void setApiurls(String a) { apiurls = a; }
+    private String certurl = null;
+    @Required public void setCerturl(String a) { certurl = a; }
     
     // for access to OAuth2-protected resources, set by spring-security-oauth
     private OAuth2RestTemplate oauth2RestTemplate;

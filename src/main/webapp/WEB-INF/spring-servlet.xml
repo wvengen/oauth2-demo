@@ -20,8 +20,9 @@
 
   <!-- where our food is obtained -->
   <beans:bean id="plateClient" class="org.example.PlateClient">
-    <beans:property name="apiurl"  value="http://localhost:8080/hello" />
-    <beans:property name="apiurls" value="http://localhost:8080/secure" />
+    <beans:property name="apiurl"  value="https://localhost:8080/hello" />
+    <beans:property name="apiurls" value="https://localhost:8080/secure" />
+    <beans:property name="certurl" value="https://localhost:8082/oauth/certificate/" />
     
     <beans:property name="oauth2RestTemplate">
       <oauth:rest-template resource="foodService" />
@@ -41,7 +42,7 @@
                   client-secret="xyz"
                   user-authorization-uri="https://localhost:8082/oauth/authorize"
                   access-token-uri="https://localhost:8082/oauth/access_token"
-                  scope="read" />  
+                  scope="https://localhost:8082/oauth/certificate/" />  
 
   <authentication-manager>
     <authentication-provider>

@@ -10,6 +10,12 @@
   <packaging>war</packaging>
 
   <dependencies>
+    <!-- Contrail/EUDAT stuff, for easy certificate handling -->
+    <dependency>
+      <groupId>org.ow2.contrail.common</groupId>
+      <artifactId>security-commons</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
     <!-- servlet api, needed to compile, provided at run-time by tomcat -->
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -111,11 +117,18 @@
     </plugins>
   </build>
 
-  <!-- spring-security-oauth2 is not yet officialy released -->
   <repositories>
+    <!-- spring-security-oauth2 is not yet officialy released -->
     <repository>
       <id>spring-milestone</id>
       <url>http://maven.springframework.org/milestone/</url>
+    </repository>
+    <!-- Contrail repository for security helpers; not yet officialy released -->
+    <repository>
+      <id>contrail</id>
+      <url>http://repository.ow2.org/nexus/content/repositories/snapshots/</url>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
     </repository>
   </repositories>
 
