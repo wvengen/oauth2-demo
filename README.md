@@ -52,7 +52,7 @@ checkout the three branches and run the service contained in each.
 # in one terminal
 git clone -b eudat-service-master https://github.com/wvengen/oauth2-demo eudat-service-master
 cd eudat-service-master
-mvn tomcat:run
+mvn jetty:run
 # in another terminal
 git clone -b eudat-as-master https://github.com/wvengen/oauth2-demo eudat-as-master
 easy_install [--user] ndg_oauth_server
