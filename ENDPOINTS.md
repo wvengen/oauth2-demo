@@ -47,7 +47,8 @@ web application, after obtaining a code from the authorization server.
    `grant_type` `code` `redirect_uri` `client_id`
    as described in [OAuth2/4.1.3](http://tools.ietf.org/html/rfc6749#section-4.1.3).
 * ___authentication___: client secret (default) or client certificate
-   as defined in the `ndg_oauth_server` configuration file and `client_register.ini`.
+   as defined in the `ndg_oauth_server` configuration file and `client_register.ini`
+   (client secret only part of fork mentioned in README.md).
 * ___response___: json structure with access token
    as described in [OAuth2/4.1.4](http://tools.ietf.org/html/rfc6749#section-4.1.4).
 
@@ -67,7 +68,7 @@ where possible, like [CloudFoundry's RemoteTokenServices].
 * ___endpoint url___: `/oauth/check_token`
 * ___parameters___:
   - `access_token`: the access token to check for validity
-  - `scope`: scope to require for the access token **(optional)**
+  - `scope`: scope to require for the access token __(optional)__
 * ___authentication___: resource secret (default) or resource certificate
    as defined in the `ndg_oauth_server` configuration file and `resource_register.ini`
    (only in fork mentioned in README.md).
