@@ -1,28 +1,27 @@
 package org.example;
  
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringBufferInputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.security.KeyPair;
+import java.security.KeyStore;
 import java.security.Security;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
-import javax.security.cert.X509Certificate;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.bouncycastle.jce.PKCS10CertificationRequest;
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jce.provider.PEMUtil;
-import org.bouncycastle.openssl.PEMWriter;
-import org.eclipse.persistence.internal.oxm.conversion.Base64;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -34,7 +33,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
-import eu.contrail.security.DelegatedCertClient;
 import eu.contrail.security.SecurityCommons;
  
 @Controller
@@ -72,15 +70,23 @@ public class PlateClient extends HttpServlet
     		MultiValueMap<String, String> param = new LinkedMultiValueMap<String, String>();
     		param.add("certificate_request", csr);
     		String r = oauth2RestTemplate.postForObject(new URI(certurl), param, String.class);
+    		X509Certificate cert = (X509Certificate)sc.readPEM(new StringBufferInputStream(r), null);
 
-    		// for now, just print the certificate
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("text/html");
-            response.getWriter().println(r);
-
-    		// TODO then get resource using client-side certificate
-    		//RestTemplate rest = new RestTemplate();
-            //servePlate(response, readFood(new URI(apiurls), rest));
+    		// put client-side certificate+keypair in in-memory keystore
+    		String kspasswd = "unimportant"; // required but not sensitive for in-memory
+    		KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+    		ks.load(null, kspasswd.toCharArray());
+    		ks.setEntry("default",
+    				new KeyStore.PrivateKeyEntry(keyPair.getPrivate(), new X509Certificate[]{cert}),
+    				new KeyStore.PasswordProtection(kspasswd.toCharArray()));
+    		
+            // and get resource using that
+    		SSLSocketFactory sslFactory = new SSLSocketFactory(ks, kspasswd);
+    		HttpClient client = new DefaultHttpClient();
+    		client.getConnectionManager().getSchemeRegistry().register(
+    				new Scheme("https", 443, sslFactory));
+            RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory(client));
+            servePlate(response, readFood(new URI(apiurls), rest));
     	} catch(Exception e) {
     		throw new ServletException(e);
     	}
