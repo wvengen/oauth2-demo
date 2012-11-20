@@ -8,6 +8,7 @@ To Run
 * Make sure you have installed the `ndg_oauth_server` Python package:
 
         easy_install [--user] ndg_oauth_server
+        easy_install [--user] ContrailOnlineCAService
 
   This uses version 0.4.0, which is available from [PyPi].
 
