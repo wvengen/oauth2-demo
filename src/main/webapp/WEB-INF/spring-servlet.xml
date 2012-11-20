@@ -21,7 +21,7 @@
   <!-- certificate-protect pages -->
   <http>
     <x509 subject-principal-regex="CN=(.*?)," />
-    <intercept-url pattern="/secure" access="IS_AUTHENTICATED_FULLY" />
+    <intercept-url pattern="/secure" access="IS_AUTHENTICATED_FULLY" requires-channel="https" />
   </http>
 
   <!-- Username/password for HTTP basic auth -->
