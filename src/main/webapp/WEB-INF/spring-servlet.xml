@@ -18,21 +18,11 @@
   <!-- And serve static content as well -->
   <mvc:default-servlet-handler />
 
-  <!-- password&OAuth2-protected pages -->
+  <!-- certificate-protect pages -->
   <http>
-    <http-basic />
+    <x509 subject-principal-regex="CN=(.*?)," />
     <intercept-url pattern="/secure" access="IS_AUTHENTICATED_FULLY" />
-    <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
   </http>
-  
-  <oauth:resource-server id="resourceServerFilter" resource-id="HelloServlet" token-services-ref="tokenServices" />
-  
-  <beans:bean id="tokenServices" class="org.example.RemoteTokenServices">
-    <beans:property name="checkTokenEndpointUrl" value="https://localhost:8082/oauth/check_token" />
-    <beans:property name="checkTokenEndpointUsername" value="01234" />
-    <beans:property name="checkTokenEndpointPassword" value="abc" />
-    <beans:property name="scope" value="read" />
-  </beans:bean>
 
   <!-- Username/password for HTTP basic auth -->
   <authentication-manager>

@@ -93,9 +93,12 @@
         <version>1.1</version>
         <configuration>
           <path>/</path>
-          <port>8080</port>
+          <port>0</port>
+          <httpsPort>8080</httpsPort>
+          <keystoreFile>${project.basedir}/sslcert.jks</keystoreFile>
+          <keystorePass>default</keystorePass>
           <systemProperties>
-            <!-- certificate authority, used to verify check_token endpoint -->
+            <!-- certificate authority, used to verify client certificates -->
             <javax.net.ssl.trustStore>${project.basedir}/cacert.jks</javax.net.ssl.trustStore>
             <javax.net.ssl.trustStorePassword>default</javax.net.ssl.trustStorePassword>
 
