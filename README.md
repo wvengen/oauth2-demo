@@ -7,9 +7,9 @@ To Run
 
 * Make sure you have installed the `ndg_oauth_server` Python package:
 
-        easy_install [--user] https://github.com/downloads/wvengen/ndg_oauth_server/ndg_oauth_server-0.4.0.tar.gz
+        easy_install [--user] http://www.nikhef.nl/~wvengen/misc/ndg_oauth_server-0.4.0.tar.gz
 
-  This is a customised version that includes support for password-based
+  This is a [customised version] that includes support for password-based
   client authentication and resource authentication. Work is underway
   to get this integrated upstream.
 
@@ -26,3 +26,4 @@ To Run
   between test runs.
 
 [PyPi]: http://pypi.python.org/
+[customised version]: https://github.com/wvengen/ndg_oauth/tree/master/ndg_oauth_server
