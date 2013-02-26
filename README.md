@@ -53,7 +53,7 @@ cd service-master
 mvn tomcat:run
 # in another terminal
 git clone -b as-ndg-master https://github.com/wvengen/oauth2-demo as-ndg-master
-easy_install [--user] https://github.com/downloads/wvengen/ndg_oauth_server/ndg_oauth_server-0.4.0.tar.gz
+easy_install [--user] http://www.nikhef.nl/~wvengen/misc/ndg_oauth_server-0.4.0.tar.gz
 cd as-ndg-master
 PATH=$PATH:$HOME/.local/bin # if paster was installed as user
 paster serve bearer_tok_server_app.ini
@@ -249,7 +249,7 @@ entails at least:
 
 [Spring Security]: http://static.springsource.org/spring-security/
 [Spring Security OAuth]: https://github.com/SpringSource/spring-security-oauth
-[ndg_oauth_server]: https://github.com/wvengen/ndg_oauth_server
+[ndg_oauth_server]: https://github.com/wvengen/ndg_oauth/tree/master/ndg_oauth_server
 [NDG ndg_oauth_server]: http://ndg-security.ceda.ac.uk/browser/trunk/ndg_oauth
 [Maven]: http://maven.apache.org/
 [Python]: http://www.python.org/
